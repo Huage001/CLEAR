@@ -690,13 +690,13 @@ def main(args):
     if args.down_factor == 1:
         init_local_mask_flex(args.resolution // 16, args.resolution // 16, text_length=args.max_sequence_length, window_size=args.window_size, device=accelerator.device)
         attn_processors = {}
-        for idx, name in enumerate(pipe.transformer.attn_processors):
+        for idx, name in enumerate(transformer.attn_processors):
             attn_processors[k] = LocalFlexAttnProcessor(distill='single' in name and idx % 4 == 0)
     else:
         init_local_downsample_mask_flex(args.resolution // 16, args.resolution // 16, text_length=args.max_sequence_length, window_size=args.window_size, 
-                                        down_factor=args.down_factor, device=device)
+                                        down_factor=args.down_factor, device=accelerator.device)
         attn_processors = {}
-        for idx, name in enumerate(pipe.transformer.attn_processors):
+        for idx, name in enumerate(transformer.attn_processors):
             attn_processors[k] = LocalDownsampleFlexAttnProcessor(down_factor=args.down_factor, distill='single' in name and idx % 4 == 0)
     attn_processors_teacher = {}
     for idx, name in enumerate(transformer_teacher.attn_processors.keys()):
