@@ -41,7 +41,7 @@ from diffusers.utils.torch_utils import is_compiled_module
 from safetensors.torch import save_file
 from safetensors import safe_open
 from dataset import loader
-from attention_processor import LocalFlexAttnProcessor, LocalDownsampleFlexAttnProcessor, init_local_mask_flex, init_local_downsample_mask_flex
+from attention_processor import FluxAttnProcessor2_0, LocalFlexAttnProcessor, LocalDownsampleFlexAttnProcessor, init_local_mask_flex, init_local_downsample_mask_flex
 from attention_processor import attn_outputs_teacher, attn_outputs
 
 
@@ -691,13 +691,13 @@ def main(args):
         init_local_mask_flex(args.resolution // 16, args.resolution // 16, text_length=args.max_sequence_length, window_size=args.window_size, device=accelerator.device)
         attn_processors = {}
         for idx, name in enumerate(transformer.attn_processors):
-            attn_processors[k] = LocalFlexAttnProcessor(distill='single' in name and idx % 4 == 0)
+            attn_processors[name] = LocalFlexAttnProcessor(distill='single' in name and idx % 4 == 0)
     else:
         init_local_downsample_mask_flex(args.resolution // 16, args.resolution // 16, text_length=args.max_sequence_length, window_size=args.window_size, 
                                         down_factor=args.down_factor, device=accelerator.device)
         attn_processors = {}
         for idx, name in enumerate(transformer.attn_processors):
-            attn_processors[k] = LocalDownsampleFlexAttnProcessor(down_factor=args.down_factor, distill='single' in name and idx % 4 == 0)
+            attn_processors[name] = LocalDownsampleFlexAttnProcessor(down_factor=args.down_factor, distill='single' in name and idx % 4 == 0)
     attn_processors_teacher = {}
     for idx, name in enumerate(transformer_teacher.attn_processors.keys()):
         attn_processors_teacher[name] = FluxAttnProcessor2_0(distill='single' in name and idx % 4 == 0)
