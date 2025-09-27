@@ -7,26 +7,29 @@
 
 > **CLEAR: Conv-Like Linearization Revs Pre-Trained Diffusion Transformers Up**
 > <br>
-> [Songhua Liu](http://121.37.94.87/), 
+> [Songhua Liu](http://huage001.github.io/), 
 > [Zhenxiong Tan](https://scholar.google.com/citations?user=HP9Be6UAAAAJ&hl=en), 
 > and 
 > [Xinchao Wang](https://sites.google.com/site/sitexinchaowang/)
 > <br>
-> [Learning and Vision Lab](http://lv-nus.org/), National University of Singapore
+> NeurIPS 2025
+> <br>
+> [xML Lab](https://sites.google.com/view/xml-nus), National University of Singapore
 > <br>
 
 ![](./assets/teaser.png)
 
 ## 🔥News
 
-**[2024/12/20]** We release training and inference codes of CLEAR, a simple-yet-effective strategy to linearize the complexity of pre-trained diffusion transformers, such as FLUX and SD3.
+**[2025/9/18]** CLEAR is accepted at NeurIPS 2025.
+**[2024/12/20]** We release training and inference codes of CLEAR, a simple yet effective strategy to linearize the complexity of pre-trained diffusion transformers, such as FLUX and SD3.
 
 ## Introduction
 
 Diffusion Transformers (DiT) have become a leading architecture in image generation. However, the quadratic complexity of attention mechanisms, which are responsible for modeling token-wise relationships, results in significant latency when generating high-resolution images. To address this issue, we aim at a linear attention mechanism in this paper that reduces the complexity of pre-trained DiTs to linear. We begin our exploration with a comprehensive summary of existing efficient attention mechanisms and identify four key factors crucial for successful linearization of pre-trained DiTs: locality, formulation consistency, high-rank attention maps, and feature integrity. Based on these insights, we introduce a convolution-like local attention strategy termed CLEAR, which limits feature interactions to a local window around each query token, and thus achieves linear complexity. 
-Our experiments indicate that, by fine-tuning the attention layer on merely 10K self-generated samples for 10K iterations, we can effectively transfer knowledge from a pre-trained DiT to a student model with linear complexity, yielding results comparable to the teacher model. Simultaneously, it reduces attention computations by 99.5% and accelerates generation by 6.3 times for generating 8K-resolution images. Furthermore, we investigate favorable properties in the distilled attention layers, such as zero-shot generalization cross various models and plugins, and improved support for multi-GPU parallel inference.
+Our experiments indicate that, by fine-tuning the attention layer on merely 10K self-generated samples for 10K iterations, we can effectively transfer knowledge from a pre-trained DiT to a student model with linear complexity, yielding results comparable to the teacher model. Simultaneously, it reduces attention computations by 99.5% and accelerates generation by 6.3 times for generating 8K-resolution images. Furthermore, we investigate favorable properties in the distilled attention layers, such as zero-shot generalization across various models and plugins, and improved support for multi-GPU parallel inference.
 
-**TL;DR**: For pre-trained diffusion transformers, enforcing an image token interact with only tokens within **a local window** can effectively reduce the complexity of the original models to a linear scale.
+**TL;DR**: For pre-trained diffusion transformers, enforcing an image token to interact with only tokens within **a local window** can effectively reduce the complexity of the original models to a linear scale.
 
 ## Installation
 
@@ -48,7 +51,7 @@ Our experiments indicate that, by fine-tuning the attention layer on merely 10K 
 
 We release a series of variants for linearized [FLUX-1.dev](https://huggingface.co/black-forest-labs/FLUX.1-dev) with various local window sizes. 
 
-We experimentally find that when local window size is small, e.g., 8, the model can produce repetitive patterns in many cases. To alleviate the problem, in some variants, we also include down-sampled key-value tokens besides local tokens for attention interaction.
+We experimentally find that when the local window size is small, e.g., 8, the model can produce repetitive patterns in many cases. To alleviate the problem, in some variants, we also include down-sampled key-value tokens besides local tokens for attention interaction.
 
 The supported models and the download links are:
 
@@ -71,11 +74,11 @@ wget https://huggingface.co/Huage001/CLEAR/resolve/main/clear_local_8_down_4.saf
 
 * If you want to compare the linearized FLUX with the original model, please try ``inference_t2i.ipynb``.
 
-* If you want to use CLEAR for high-resolution acceleration, please try ``inference_t2i_highres.ipynb``. We current adopt the strategy of [SDEdit](https://huggingface.co/docs/diffusers/v0.30.2/en/api/pipelines/stable_diffusion/img2img#image-to-image). The basic idea is to generate a low-resolution result at first, based on which we gradually upscale the image.
+* If you want to use CLEAR for high-resolution acceleration, please try ``inference_t2i_highres.ipynb``. We currently adopt the strategy of [SDEdit](https://huggingface.co/docs/diffusers/v0.30.2/en/api/pipelines/stable_diffusion/img2img#image-to-image). The basic idea is to generate a low-resolution result at first, based on which we gradually upscale the image.
 
 * Please configure ``down_factor`` and ``window_size`` in the notebooks to use different variants of CLEAR. If you do not want to include down-sampled key-value tokens, specify ``down_factor=1``. The models will be downloaded automatically to ``ckpt`` if not downloaded.
 
-* Currently, a GPU card with 48G VMem is recommeded for high-resolution generation.
+* Currently, a GPU card with 48 GB VMem is recommended for high-resolution generation.
 
 
 ## Training
@@ -88,7 +91,7 @@ wget https://huggingface.co/Huage001/CLEAR/resolve/main/clear_local_8_down_4.saf
   tar -xvf data_000000.tar -C /path/to/t2i_1024
   ```
 
-* [Optional but Recommended] Cache T5 and CLIP text embedings and VAE features beforehand:
+* [Optional but Recommended] Cache T5 and CLIP text embeddings and VAE features beforehand:
 
   ```bash
   bash cache_prompt_embeds.sh
@@ -115,15 +118,13 @@ wget https://huggingface.co/Huage001/CLEAR/resolve/main/clear_local_8_down_4.saf
 
 ## Citation
 
-If you finds this repo is helpful, please consider citing:
+If you find this repo helpful, please consider citing:
 
 ```bib
 @article{liu2024clear,
-  title     = {CLEAR: Conv-Like Linearization Revs Pre-Trained Diffusion Transformers Up},
-  author    = {Liu, Songhua and Tan, Zhenxiong and Wang, Xinchao},
-  year      = {2024},
-  eprint    = {2412.16112},
-  archivePrefix={arXiv},
-  primaryClass={cs.CV}
+    title     = {CLEAR: Conv-Like Linearization Revs Pre-Trained Diffusion Transformers Up},
+    author    = {Liu, Songhua and Tan, Zhenxiong and Wang, Xinchao},
+    journal   = {NeurIPS},
+    year      = {2025},
 }
 ```
